@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/chinclubi/simulator-payment-gateway/issues"
   },
-  "homepage": "https://github.com/chinclubi/simulator-payment-gateway#readme"
+  "homepage": "https://github.com/chinclubi/simulator-payment-gateway#readme",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3"
+  }
 }
