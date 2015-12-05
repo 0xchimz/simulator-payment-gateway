@@ -20,14 +20,6 @@ var bank_no = {
   }
 }
 
-router.get('/test', function (req, res) {
-  console.log('VISA TEST')
-  res.json({
-    result: 'visa',
-    message: 'VISA TEST'
-  })
-})
-
 router.post('/validate', function (req, res) {
   var fullUrl = req.protocol + '://' + req.get('host')
   var card = req.body.card
@@ -35,7 +27,8 @@ router.post('/validate', function (req, res) {
   var account = {
     bank_account: card.bank_account,
     check_digital: card.check_digital,
-    cvv: card.cvv
+    cvv: card.cvv,
+    ex_date: card.ex_date
   }
   var transaction = {
     card: account,
@@ -59,8 +52,7 @@ router.post('/validate', function (req, res) {
         res.status(500)
         res.json({
           result: 'error',
-          message: 'Bank account reponse with error.',
-          response: response.body
+          message: response.body.message
         })
       }
     })
@@ -80,7 +72,8 @@ router.post('/pay', function (req, res) {
   var account = {
     bank_account: card.bank_account,
     check_digital: card.check_digital,
-    cvv: card.cvv
+    cvv: card.cvv,
+    ex_date: card.ex_date
   }
   var transaction = {
     card: account,
@@ -104,8 +97,7 @@ router.post('/pay', function (req, res) {
         res.status(500)
         res.json({
           result: 'error',
-          message: 'Bank account reponse with error.',
-          response: response.body
+          message: response.body.message
         })
       }
     })
