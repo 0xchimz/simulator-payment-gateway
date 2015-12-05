@@ -145,7 +145,7 @@ router.post('/account', function (req, res) {
 
 router.post('/pay', function (req, res) {
   var fullUrl = req.protocol + '://' + req.get('host')
-  var owner = req.body.owner_card
+  var owner = req.body.owner_account
   var card = req.body.card
   var cvv = req.body.cvv
   var price = req.body.price
