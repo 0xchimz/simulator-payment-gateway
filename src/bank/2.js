@@ -37,21 +37,20 @@ router.post('/validate', function (req, res) {
   var card = req.body.card
   var cvv = req.body.cvv
   var price = req.body.price
-  var exp_date = req.body.exp_date
   var card_data = {
-    bank_no: card.substring(1, 7),
-    bank_account: card.substring(7, 15),
-    check_digital: card.charAt(15),
+    bank_no: card.no.substring(1, 7),
+    bank_account: card.no.substring(7, 15),
+    check_digital: card.no.charAt(15),
     cvv: cvv,
-    exp_date: exp_date
+    exp_date: card.exp_date
   }
   var transaction = {
     card: card_data,
     price: price
   }
-  if (system_no[card.charAt(0)] !== undefined) {
+  if (system_no[card.no.charAt(0)] !== undefined) {
     var obj = {
-      uri: fullUrl + system_no[card.charAt(0)].url + '/validate',
+      uri: fullUrl + system_no[card.no.charAt(0)].url + '/validate',
       method: 'POST',
       json: transaction
     }
@@ -61,9 +60,9 @@ router.post('/validate', function (req, res) {
           result: 'ready',
           message: 'Credit card is ready.',
           data: {
-            card_no: card,
-            exp_date: exp_date,
-            card_system: system_no[card.charAt(0)].name
+            card_no: card.no,
+            exp_date: card.exp_date,
+            card_system: system_no[card.no.charAt(0)].name
           }
         })
       } else {
@@ -171,22 +170,21 @@ router.post('/pay', function (req, res) {
   var card = req.body.card
   var cvv = req.body.cvv
   var price = req.body.price
-  var exp_date = req.body.exp_date
   var card_data = {
-    bank_no: card.substring(1, 7),
-    bank_account: card.substring(7, 15),
-    check_digital: card.charAt(15),
+    bank_no: card.no.substring(1, 7),
+    bank_account: card.no.substring(7, 15),
+    check_digital: card.no.charAt(15),
     cvv: cvv,
-    exp_date: exp_date
+    exp_date: card.exp_date
   }
   var transaction = {
     card: card_data,
     price: price
   }
   if (accounts[owner] !== undefined) {
-    if (system_no[card.charAt(0)] !== undefined) {
+    if (system_no[card.no.charAt(0)] !== undefined) {
       var obj = {
-        uri: fullUrl + system_no[card.charAt(0)].url + '/pay',
+        uri: fullUrl + system_no[card.no.charAt(0)].url + '/pay',
         method: 'POST',
         json: transaction
       }
