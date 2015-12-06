@@ -28,7 +28,7 @@ router.post('/validate', function (req, res) {
     bank_account: card.bank_account,
     check_digital: card.check_digital,
     cvv: card.cvv,
-    ex_date: card.ex_date
+    exp_date: card.exp_date
   }
   var transaction = {
     card: account,
@@ -73,7 +73,7 @@ router.post('/pay', function (req, res) {
     bank_account: card.bank_account,
     check_digital: card.check_digital,
     cvv: card.cvv,
-    ex_date: card.ex_date
+    exp_date: card.exp_date
   }
   var transaction = {
     card: account,

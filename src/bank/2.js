@@ -1,5 +1,6 @@
 var express = require('express')
 var request = require('request')
+var moment = require('moment')
 var router = express.Router()
 
 var accounts = {
@@ -7,7 +8,7 @@ var accounts = {
     no: '42570065',
     check_digital: '8',
     cvv: '148',
-    ex_date: '2017/01',
+    exp_date: moment.utc([2017, 0, 1, 0]),
     card_holder: 'JOHN CENA',
     financial_amount: 200000
   },
@@ -15,7 +16,7 @@ var accounts = {
     no: '32150005',
     check_digital: '0',
     cvv: '154',
-    ex_date: '2018/03',
+    exp_date: moment.utc([2018, 2, 1, 0]),
     card_holder: 'WILL SMITH',
     financial_amount: 500000
   }
@@ -36,13 +37,13 @@ router.post('/validate', function (req, res) {
   var card = req.body.card
   var cvv = req.body.cvv
   var price = req.body.price
-  var ex_date = req.body.ex_date
+  var exp_date = req.body.exp_date
   var card_data = {
     bank_no: card.substring(1, 7),
     bank_account: card.substring(7, 15),
     check_digital: card.charAt(15),
     cvv: cvv,
-    ex_date: ex_date
+    exp_date: exp_date
   }
   var transaction = {
     card: card_data,
@@ -61,7 +62,7 @@ router.post('/validate', function (req, res) {
           message: 'Credit card is ready.',
           data: {
             card_no: card,
-            ex_date: ex_date,
+            exp_date: exp_date,
             card_system: system_no[card.charAt(0)].name
           }
         })
@@ -85,34 +86,55 @@ router.post('/validate', function (req, res) {
 router.post('/account', function (req, res) {
   if (accounts[req.body.card.bank_account] !== undefined) {
     if (accounts[req.body.card.bank_account].check_digital === req.body.card.check_digital) {
-      if (accounts[req.body.card.bank_account].cvv === req.body.card.cvv && accounts[req.body.card.bank_account].ex_date === req.body.card.ex_date) {
+      var req_date = moment.utc(parseInt(req.body.card.exp_date, 10))
+      if (accounts[req.body.card.bank_account].cvv === req.body.card.cvv &&
+        accounts[req.body.card.bank_account].exp_date.diff(req_date, 'months') === 0 &&
+        accounts[req.body.card.bank_account].exp_date.diff(req_date, 'years') === 0) {
+        var compare = accounts[req.body.card.bank_account].exp_date.diff(moment())
         if (req.body.status === 'validate') {
-          if (accounts[req.body.card.bank_account].financial_amount >= req.body.price) {
-            res.json({
-              result: 'ready',
-              message: 'Transaction is ready'
-            })
+          if (compare >= 0) {
+            if (accounts[req.body.card.bank_account].financial_amount >= req.body.price) {
+              res.json({
+                result: 'ready',
+                message: 'Transaction is ready'
+              })
+            } else {
+              res.status(500)
+              res.json({
+                result: 'error',
+                message: 'Out of amount',
+                response: req.body
+              })
+            }
           } else {
             res.status(500)
             res.json({
               result: 'error',
-              message: 'Out of amount',
+              message: 'Credit card is expired',
               response: req.body
             })
           }
         } else if (req.body.status === 'pay') {
-          if (accounts[req.body.card.bank_account].financial_amount >= req.body.price) {
-            accounts[req.body.card.bank_account].financial_amount -= req.body.price
-            res.json({
-              result: 'ready',
-              message: 'Transaction is success',
-              response: req.body
-            })
+          if (compare >= 0) {
+            if (accounts[req.body.card.bank_account].financial_amount >= req.body.price) {
+              accounts[req.body.card.bank_account].financial_amount -= req.body.price
+              res.json({
+                result: 'ready',
+                message: 'Transaction is success'
+              })
+            } else {
+              res.status(500)
+              res.json({
+                result: 'error',
+                message: 'Out of amount',
+                response: req.body
+              })
+            }
           } else {
             res.status(500)
             res.json({
               result: 'error',
-              message: 'Out of amount',
+              message: 'Credit card is expired',
               response: req.body
             })
           }
@@ -149,13 +171,13 @@ router.post('/pay', function (req, res) {
   var card = req.body.card
   var cvv = req.body.cvv
   var price = req.body.price
-  var ex_date = req.body.ex_date
+  var exp_date = req.body.exp_date
   var card_data = {
     bank_no: card.substring(1, 7),
     bank_account: card.substring(7, 15),
     check_digital: card.charAt(15),
     cvv: cvv,
-    ex_date: ex_date
+    exp_date: exp_date
   }
   var transaction = {
     card: card_data,
