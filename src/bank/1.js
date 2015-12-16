@@ -88,6 +88,8 @@ router.post('/account', function (req, res) {
       var req_date = moment.utc(parseInt(req.body.card.exp_date, 10))
       console.log(req_date.valueOf())
       console.log('Month: ' + accounts[req.body.card.bank_account].exp_date.month() + '//' + req_date.month())
+      console.log('Year: ' + accounts[req.body.card.bank_account].exp_date.year() + '//' + req_date.year())
+      console.log('cvv: ' + accounts[req.body.card.bank_account].cvv + '//' + req.body.card.cvv)
       if (accounts[req.body.card.bank_account].cvv === req.body.card.cvv &&
         accounts[req.body.card.bank_account].exp_date.diff(req_date, 'months') === 0 &&
         accounts[req.body.card.bank_account].exp_date.diff(req_date, 'years') === 0) {
