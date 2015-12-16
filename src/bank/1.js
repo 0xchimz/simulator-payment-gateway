@@ -86,6 +86,7 @@ router.post('/account', function (req, res) {
   if (accounts[req.body.card.bank_account] !== undefined) {
     if (accounts[req.body.card.bank_account].check_digital === req.body.card.check_digital) {
       var req_date = moment.utc(parseInt(req.body.card.exp_date, 10))
+      console.log(req_date.valueOf())
       if (accounts[req.body.card.bank_account].cvv === req.body.card.cvv &&
         accounts[req.body.card.bank_account].exp_date.diff(req_date, 'months') === 0 &&
         accounts[req.body.card.bank_account].exp_date.diff(req_date, 'years') === 0) {
