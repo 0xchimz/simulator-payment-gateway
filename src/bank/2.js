@@ -18,7 +18,7 @@ var accounts = {
     cvv: '154',
     exp_date: moment.utc([2018, 2, 1, 0]),
     card_holder: 'WILL SMITH',
-    financial_amount: 500000
+    financial_amount: 0
   }
 }
 var system_no = {
